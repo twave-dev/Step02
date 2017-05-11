@@ -6,6 +6,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.twave.step02.data.SunshinePreferences;
@@ -17,52 +19,54 @@ import java.net.URL;
 public class MainActivity extends AppCompatActivity {
 
     private TextView mWeatherTextView;
+    private TextView mErrorMessageDisplay;
+    private ProgressBar mLoadingIndicator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_forecast);
 
-        // Ctrl+Shift+A : Find Action
-        // Ctrl+Shift+Space : SmartType
+        // Ctrl + Shift + A : 작업 찾기 Find Action
+        // Ctrl + Shift + Space : 스마트 코드 완성(예상 형식을 기준으로 메서드 및 변수 목록 필터링)
+        // Ctrl + Shift + Enter : 문법 자동 완성
+        // Alt + Enter : Quick Fix
+
         mWeatherTextView = (TextView) findViewById(R.id.tv_weather_data);
 
-        /*
-        String[] dummyWeatherData = {
-                "Today, May 17 - Clear - 17°C / 15°C",
-                "Tomorrow - Cloudy - 19°C / 15°C",
-                "Thursday - Rainy- 30°C / 11°C",
-                "Friday - Thunderstorms - 21°C / 9°C",
-                "Saturday - Thunderstorms - 16°C / 7°C",
-                "Sunday - Rainy - 16°C / 8°C",
-                "Monday - Partly Cloudy - 15°C / 10°C",
-                "Tue, May 24 - Meatballs - 16°C / 18°C",
-                "Wed, May 25 - Cloudy - 19°C / 15°C",
-                "Thu, May 26 - Stormy - 30°C / 11°C",
-                "Fri, May 27 - Hurricane - 21°C / 9°C",
-                "Sat, May 28 - Meteors - 16°C / 7°C",
-                "Sun, May 29 - Apocalypse - 16°C / 8°C",
-                "Mon, May 30 - Post Apocalypse - 15°C / 10°C",
-        };
+        mErrorMessageDisplay = (TextView) findViewById(R.id.tv_error_message_display);
 
-        // Ctrl + Shift + Enter : 문법 자동 완성
-        for (String dummyWeatherDay : dummyWeatherData) {
-            mWeatherTextView.append(dummyWeatherDay + "\n\n\n");
-        }
-        */
+        mLoadingIndicator = (ProgressBar) findViewById(R.id.pb_loading_indicator);
 
-        // Alt+Enter : Quick Fix
         loadWeatherData();
     }
 
 
 
     private void loadWeatherData() {
+        showWeatherDataView();
+
         String location = SunshinePreferences.getPreferredWeatherLocation(this);
         new FetchWeatherTask().execute(location);
     }
 
+    private void showWeatherDataView() {
+        mErrorMessageDisplay.setVisibility(View.INVISIBLE);
+        mWeatherTextView.setVisibility(View.VISIBLE);
+    }
+
+    private void showErrorMessage() {
+        mErrorMessageDisplay.setVisibility(View.VISIBLE);
+        mWeatherTextView.setVisibility(View.INVISIBLE);
+    }
+
     public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            mLoadingIndicator.setVisibility(View.VISIBLE);
+        }
 
         @Override
         protected String[] doInBackground(String... params) {
@@ -86,15 +90,21 @@ public class MainActivity extends AppCompatActivity {
             }
 
         }
-
         @Override
         protected void onPostExecute(String[] weatherData) {
+            mLoadingIndicator.setVisibility(View.INVISIBLE);
+
             if(weatherData != null) {
+                showWeatherDataView();
+
                 for(String weatherString : weatherData) {
                     mWeatherTextView.append((weatherString) + "\n\n\n");
                 }
+            } else {
+                showErrorMessage();
             }
         }
+
     }
 
     @Override
