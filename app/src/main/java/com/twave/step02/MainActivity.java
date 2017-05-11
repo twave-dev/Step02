@@ -1,8 +1,15 @@
 package com.twave.step02;
 
-import android.support.v7.app.AppCompatActivity;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
+
+import com.twave.step02.data.SunshinePreferences;
+import com.twave.step02.utilities.NetworkUtils;
+import com.twave.step02.utilities.OpenWeatherJsonUtils;
+
+import java.net.URL;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -17,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
         // Ctrl+Shift+Space : SmartType
         mWeatherTextView = (TextView) findViewById(R.id.tv_weather_data);
 
+        /*
         String[] dummyWeatherData = {
                 "Today, May 17 - Clear - 17°C / 15°C",
                 "Tomorrow - Cloudy - 19°C / 15°C",
@@ -38,6 +46,49 @@ public class MainActivity extends AppCompatActivity {
         for (String dummyWeatherDay : dummyWeatherData) {
             mWeatherTextView.append(dummyWeatherDay + "\n\n\n");
         }
+        */
 
+        // Alt+Enter : Quick Fix
+        loadWeatherData();
+    }
+
+    private void loadWeatherData() {
+        String location = SunshinePreferences.getPreferredWeatherLocation(this);
+        new FetchWeatherTask().execute(location);
+    }
+
+    public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
+
+        @Override
+        protected String[] doInBackground(String... params) {
+            if(params == null) {
+                return null;
+            }
+
+            String location = params[0];
+            URL weatherRequestUrl = NetworkUtils.buildUrl(location);
+
+            try {
+                String jsonWeatherResponse = NetworkUtils.getResponseFromHttpUrl(weatherRequestUrl);
+
+                String[] simpleJsonWeatherData = OpenWeatherJsonUtils.getSimpleWeatherStringsFromJson(MainActivity.this, jsonWeatherResponse);
+
+                return simpleJsonWeatherData;
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
+
+        }
+
+        @Override
+        protected void onPostExecute(String[] weatherData) {
+            if(weatherData != null) {
+                for(String weatherString : weatherData) {
+                    mWeatherTextView.append((weatherString) + "\n\n\n");
+                }
+            }
+        }
     }
 }
