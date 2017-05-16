@@ -16,12 +16,31 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.Foreca
 
     private String[] mWeatherData;
 
-    public class ForecastAdapterViewHolder extends RecyclerView.ViewHolder {
+    private final ForecastAdapterOnClickHandler mClickHandler;
+    // 아이템 클릭시 실행함수
+    public interface ForecastAdapterOnClickHandler {
+        void onClick(String weatherForDay);
+    }
+
+    public ForecastAdapter(ForecastAdapterOnClickHandler clickHandler) {
+        this.mClickHandler = clickHandler;
+    }
+
+    public class ForecastAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
         public final TextView mWeatherTextView;
         public ForecastAdapterViewHolder(View view) {
             super(view);
             this.mWeatherTextView = (TextView) view.findViewById(R.id.tv_weather_data);
+
+            view.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            int adapterPosition = getAdapterPosition();
+            String weatherForDay = mWeatherData[adapterPosition];
+            mClickHandler.onClick(weatherForDay);
         }
     }
 
