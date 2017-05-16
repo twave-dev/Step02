@@ -29,7 +29,6 @@
     <string name="action_map">Map Location</string>
     <string name="action_share">Share</string>
 
-    <!--COMPLETED (3) Add a string called action_settings with value of Settings-->
     <string name="action_settings">Settings</string>
 
     <!--Used in overflow menu to refresh weather data-->
@@ -171,6 +170,9 @@
     <string name="condition_962">Hurricane</string>
 
     <string name="condition_unknown">Unknown (<xliff:g id="conditionId">%1$d</xliff:g>)</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 
     <!-- - - - - - - - - - - -->
