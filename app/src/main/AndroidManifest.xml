@@ -30,6 +30,11 @@
                 android:value=".MainActivity" />
         </activity>
         <activity android:name=".SettingsActivity"></activity>
+
+        <provider
+            android:authorities="com.twave.step02"
+            android:name=".data.WeatherProvider"
+            android:exported="false" />
     </application>
 
 </manifest>
