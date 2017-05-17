@@ -35,6 +35,10 @@
             android:authorities="com.twave.step02"
             android:name=".data.WeatherProvider"
             android:exported="false" />
+
+        <service
+            android:name=".sync.SunshineSyncIntentService"
+            android:exported="false" />
     </application>
 
 </manifest>

@@ -21,6 +21,7 @@ import android.widget.ProgressBar;
 import com.twave.step02.ForecastAdapter.ForecastAdapterOnClickHandler;
 import com.twave.step02.data.SunshinePreferences;
 import com.twave.step02.data.WeatherContract;
+import com.twave.step02.sync.SunshineSyncUtils;
 import com.twave.step02.utilities.FakeDataUtils;
 
 public class MainActivity extends AppCompatActivity implements
@@ -55,8 +56,6 @@ public class MainActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_forecast);
         getSupportActionBar().setElevation(0f);
 
-        FakeDataUtils.insertFakeData(this);
-
         // Ctrl + Shift + A : 작업 찾기 Find Action
         // Ctrl + Shift + Space : 스마트 코드 완성(예상 형식을 기준으로 메서드 및 변수 목록 필터링)
         // Ctrl + Shift + Enter : 문법 자동 완성
@@ -76,6 +75,8 @@ public class MainActivity extends AppCompatActivity implements
 
         showLoading();
         getSupportLoaderManager().initLoader(ID_FORECAST_LOADER, null, this);
+
+        SunshineSyncUtils.startImmediateSync(this);
     }
 
     private void openPreferredLocationInMap() {
@@ -134,25 +135,6 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         mForecastAdapter.swapCursor(null);
-    }
-
-    private void invalidateData() {
-        mForecastAdapter.swapCursor(null);
-    }
-
-    private void openLocationMap() {
-        String addressString = SunshinePreferences.getPreferredWeatherLocation(this);
-        Uri geoLocation = Uri.parse("geo:0,0?q=" + addressString);
-
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setData(geoLocation);
-
-        if(intent.resolveActivity(getPackageManager()) != null) {
-            startActivity(intent);
-        } else {
-            Log.d(TAG, "Couldn't call " + geoLocation.toString() + ", no receiving apps installed!");
-        }
-
     }
 
     @Override

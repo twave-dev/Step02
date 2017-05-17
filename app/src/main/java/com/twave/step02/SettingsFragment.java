@@ -1,6 +1,7 @@
 package com.twave.step02;
 
 
+import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -13,6 +14,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import com.twave.step02.data.SunshinePreferences;
+import com.twave.step02.data.WeatherContract;
+import com.twave.step02.sync.SunshineSyncUtils;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -65,6 +70,15 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        Activity activity = getActivity();
+
+        if (key.equals(getString(R.string.pref_location_key))) {
+            SunshinePreferences.resetLocationCoordinates(activity);
+            SunshineSyncUtils.startImmediateSync(activity);
+        } else if (key.equals(getString(R.string.pref_units_key))) {
+            activity.getContentResolver().notifyChange(WeatherContract.WeatherEntry.CONTENT_URI, null);
+        }
+
         Preference preference = findPreference(key);
         if(preference != null) {
             if(!(preference instanceof CheckBoxPreference)) {
