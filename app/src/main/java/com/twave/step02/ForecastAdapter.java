@@ -26,7 +26,7 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.Foreca
     private final ForecastAdapterOnClickHandler mClickHandler;
     // 아이템 클릭시 실행함수
     public interface ForecastAdapterOnClickHandler {
-        void onClick(String weatherForDay);
+        void onClick(long date);
     }
 
     public ForecastAdapter(@NonNull Context context, ForecastAdapterOnClickHandler clickHandler) {
@@ -47,8 +47,10 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.Foreca
 
         @Override
         public void onClick(View v) {
-            String weatherForDay = weatherSummary.getText().toString();
-            mClickHandler.onClick(weatherForDay);
+            int adapterPosition = getAdapterPosition();
+            mCursor.moveToPosition(adapterPosition);
+            long dateInMillis = mCursor.getLong(MainActivity.INDEX_WEATHER_DATE);
+            mClickHandler.onClick(dateInMillis);
         }
     }
 
