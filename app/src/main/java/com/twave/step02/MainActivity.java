@@ -1,6 +1,5 @@
 package com.twave.step02;
 
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -22,7 +21,6 @@ import com.twave.step02.ForecastAdapter.ForecastAdapterOnClickHandler;
 import com.twave.step02.data.SunshinePreferences;
 import com.twave.step02.data.WeatherContract;
 import com.twave.step02.sync.SunshineSyncUtils;
-import com.twave.step02.utilities.FakeDataUtils;
 
 public class MainActivity extends AppCompatActivity implements
         ForecastAdapterOnClickHandler,
@@ -76,7 +74,7 @@ public class MainActivity extends AppCompatActivity implements
         showLoading();
         getSupportLoaderManager().initLoader(ID_FORECAST_LOADER, null, this);
 
-        SunshineSyncUtils.startImmediateSync(this);
+        SunshineSyncUtils.initialize(this);
     }
 
     private void openPreferredLocationInMap() {
